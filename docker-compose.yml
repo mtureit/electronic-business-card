@@ -1,0 +1,52 @@
+services:
+  front:
+    build:
+      context: ./front/
+      dockerfile: Dockerfile
+    volumes:
+      - ./front/app:/usr/src/app
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "8000:3000"
+    stdin_open: true
+    tty: true
+
+  back:
+    build: ./back/ #Dockfileのある場所
+    container_name: myapp-back #コンテナ名の指定　無くても良い
+    tty: true
+    env_file: #環境変数ファイルの指定
+      - .env
+    volumes:
+      - .:/back
+    command: sh -c "python3 manage.py runserver 0.0.0.0:13000"
+    depends_on: #起動にDBが必要なので、DBのヘルスチェック完了後にサービスを起動するように設定
+      mydb:
+        condition: service_healthy
+    ports:
+      - 13000:13000 # ホスト側：コンテナ側でポートフォワーディング　8000は被りやすいので13000に
+
+  mydb:
+    image: mysql:8.0.32
+    container_name: mydb #コンテナ名の指定　DBはあった方が良い
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: 'Asia/Tokyo'
+    env_file:
+      - .env 
+    healthcheck:
+      test: "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"
+      timeout: 5s
+      interval: 5s
+      retries: 10
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci
+    volumes: #DBのデータは消したくないのでボリュームを作成
+      - db_data:/var/lib/mysql
+    ports:
+      - 3306:3306
+
+volumes:
+  db_data:

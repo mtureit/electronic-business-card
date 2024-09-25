@@ -1,0 +1,24 @@
+.container {
+  margin: 0 auto;
+  padding: 0;
+  width: 50%;
+  display: flex; 
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f1efe0;
+  color: #333;
+  border-left: 10px solid #2b4240;
+  border-right: 10px solid #2b4240;
+}
+.component:first-child {
+  padding-top: 50px;
+}
+
+/*スマホ*/
+@media (max-width: 600px) {
+  .container {
+    width: 70%;
+  }
+}
