@@ -1,0 +1,5 @@
+back/log/*
+back/tmp/*
+back/config/master.key
+
+settings
