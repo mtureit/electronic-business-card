@@ -26,11 +26,8 @@ export default function Home() {
   useEffect(() => {
     const textElement = textTopRef.current;
     if (textElement) {
-      let maxFontSize, minFontSize;
-
-      // デスクトップサイズ
-      maxFontSize = 24;
-      minFontSize = 16;
+      const maxFontSize = 24; // constに変更
+      const minFontSize = 16; // constに変更
 
       let fontSize = maxFontSize;
       const containerWidth = textElement.offsetWidth;
