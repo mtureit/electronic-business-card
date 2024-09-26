@@ -115,6 +115,11 @@
     transform: rotate(720deg);
   }
 }
+.generateCard img {
+  max-width: 40%;
+  height: auto;
+  border-radius: 10px;
+}
 
 /*スマホ*/
 @media (max-width: 600px) {
