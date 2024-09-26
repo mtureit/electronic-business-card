@@ -26,19 +26,11 @@ export default function Home() {
   useEffect(() => {
     const textElement = textTopRef.current;
     if (textElement) {
-      // 画面幅に応じてフォントサイズの範囲を決定
       let maxFontSize, minFontSize;
-      const windowWidth = window.innerWidth;
 
-      if (windowWidth <= 600) {
-        // スマホサイズ
-        maxFontSize = 16;
-        minFontSize = 8;
-      } else {
-        // デスクトップサイズ
-        maxFontSize = 24; // デスクトップの場合の最大フォントサイズ
-        minFontSize = 16;
-      }
+      // デスクトップサイズ
+      maxFontSize = 24;
+      minFontSize = 16;
 
       let fontSize = maxFontSize;
       const containerWidth = textElement.offsetWidth;
@@ -55,7 +47,7 @@ export default function Home() {
         textElement.style.fontSize = `${fontSize}px`;
 
         // フォントサイズに応じて `top` の値を調整
-        const topValue = 25 - (maxFontSize - fontSize) / 8;
+        const topValue = 25 - (maxFontSize - fontSize) / 12;
         textElement.style.top = `${topValue}%`;
       }
     }
@@ -161,11 +153,11 @@ export default function Home() {
         <div className={s.inputForms}>
           <form>
             <div className={s.inputForm}>
-              <label>名前・ニックネーム(無い場合は省略)</label>
+              <label>名前orニックネーム</label>
               <input
                 type="text"
                 name="name"
-                placeholder="例)長岡　太郎(おかたろ)"
+                placeholder="例)長岡　太郎orおかたろ"
                 value={profile.name}
                 onChange={handleChange}
               />
