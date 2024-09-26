@@ -54,12 +54,21 @@ export default function Home() {
 
   useEffect(() => {
     // 背景画像を取得し、CORS対応も行う
-    const img = new Image();
-    img.src = getBackgroundImage(profile.office);
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      setBackgroundImage(img.src);
+    const loadImage = async () => {
+      try {
+        const img = new Image();
+        img.src = getBackgroundImage(profile.office);
+        img.crossOrigin = "anonymous";
+
+        await img.decode(); // 画像の読み込みが完了するまで待つ
+
+        setBackgroundImage(img.src);
+      } catch (error) {
+        console.error("画像の読み込みに失敗しました: ", error);
+      }
     };
+
+    loadImage();
   }, [profile.office]);
 
   // 背景画像を取得する関数
@@ -67,25 +76,25 @@ export default function Home() {
     switch (office) {
       case "企画局":
         setTextColor("#CB1C1C");
-        return "/images/kikaku.png";
+        return "https://electronic-business-card.vercel.app/images/kikaku.png"; // 絶対パスに変更
       case "財務局":
         setTextColor("#529B30");
-        return "/images/zaimu.png";
+        return "https://electronic-business-card.vercel.app/images/zaimu.png";
       case "渉外局":
         setTextColor("#2C7184");
-        return "/images/syougai.png";
+        return "https://electronic-business-card.vercel.app/images/syougai.png";
       case "情報局":
         setTextColor("#d26e27");
-        return "/images/jyoho.png";
+        return "https://electronic-business-card.vercel.app/images/jyoho.png";
       case "制作局":
         setTextColor("#8030A5");
-        return "/images/seisaku.png";
+        return "https://electronic-business-card.vercel.app/images/seisaku.png";
       case "総務局":
         setTextColor("#414040");
-        return "/images/soumu.png";
+        return "https://electronic-business-card.vercel.app/images/soumu.png";
       default:
         setTextColor("#000000");
-        return "/images/default.png";
+        return "https://electronic-business-card.vercel.app/images/default.png";
     }
   };
 
