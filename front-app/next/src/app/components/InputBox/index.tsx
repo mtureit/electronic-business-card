@@ -53,9 +53,9 @@ export default function Home() {
   }, [profile.name]);
 
   useEffect(() => {
-    // CORS対応のためにImageオブジェクトを利用し、crossOriginを設定
+    // 背景画像を取得し、CORS対応も行う
     const img = new Image();
-    img.src = getBackgroundImage(profile.office); // 関数で背景画像を取得
+    img.src = getBackgroundImage(profile.office);
     img.crossOrigin = "anonymous";
     img.onload = () => {
       setBackgroundImage(img.src);
@@ -109,49 +109,26 @@ export default function Home() {
     const cardElement = cardRef.current;
     const pixelRatio = 4;
 
-    // iOSの場合、特別な処理を追加
     if (isIOS()) {
-      // CORS問題を回避するため、画像を再読み込み
-      const img = new Image();
-      img.src = backgroundImage;
-      img.crossOrigin = "anonymous";
-      img.onload = () => {
-        toPng(cardElement, {
-          pixelRatio: pixelRatio,
-          useCORS: true, // CORS対応
-          style: {
-            transform: "scale(1)",
-          },
-        })
-          .then((dataUrl: string) => {
-            download(dataUrl, "profile-card.png");
-          })
-          .catch((err: Error) => {
-            console.error("Oops, something went wrong!", err);
-          })
-          .finally(() => {
-            setLoading(false);
-          });
-      };
-    } else {
-      // 通常の処理
-      toPng(cardElement, {
-        pixelRatio: pixelRatio,
-        useCORS: true,
-        style: {
-          transform: "scale(1)",
-        },
-      })
-        .then((dataUrl: string) => {
-          download(dataUrl, "profile-card.png");
-        })
-        .catch((err: Error) => {
-          console.error("Oops, something went wrong!", err);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+      console.log("iOSデバイスです。特別な処理を実行します。");
     }
+
+    toPng(cardElement, {
+      pixelRatio: pixelRatio,
+      useCORS: true, // CORS対応を強化
+      style: {
+        transform: "scale(1)",
+      },
+    })
+      .then((dataUrl: string) => {
+        download(dataUrl, "profile-card.png");
+      })
+      .catch((err: Error) => {
+        console.error("エラーが発生しました: ", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   // 全てのフィールドが入力されているか確認
