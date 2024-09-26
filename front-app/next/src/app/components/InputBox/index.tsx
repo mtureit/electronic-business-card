@@ -20,6 +20,15 @@ export default function Home() {
   );
   const [textColor, setTextColor] = useState<string>("#000000");
 
+  // iOSを検出する関数
+  const isIOS = () => {
+    return (
+      /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+      typeof (window as unknown as { MSStream?: boolean }).MSStream ===
+        "undefined"
+    );
+  };
+
   useEffect(() => {
     const textElement = textTopRef.current;
     if (textElement) {
@@ -44,37 +53,41 @@ export default function Home() {
   }, [profile.name]);
 
   useEffect(() => {
-    switch (profile.office) {
-      case "企画局":
-        setBackgroundImage("/images/kikaku.png");
-        setTextColor("#CB1C1C");
-        break;
-      case "財務局":
-        setBackgroundImage("/images/zaimu.png");
-        setTextColor("#529B30");
-        break;
-      case "渉外局":
-        setBackgroundImage("/images/syougai.png");
-        setTextColor("#2C7184");
-        break;
-      case "情報局":
-        setBackgroundImage("/images/jyoho.png");
-        setTextColor("#d26e27");
-        break;
-      case "制作局":
-        setBackgroundImage("/images/seisaku.png");
-        setTextColor("#8030A5");
-        break;
-      case "総務局":
-        setBackgroundImage("/images/soumu.png");
-        setTextColor("#414040");
-        break;
-      default:
-        setBackgroundImage("/images/default.png");
-        setTextColor("#000000");
-        break;
-    }
+    // CORS対応のためにImageオブジェクトを利用し、crossOriginを設定
+    const img = new Image();
+    img.src = getBackgroundImage(profile.office); // 関数で背景画像を取得
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      setBackgroundImage(img.src);
+    };
   }, [profile.office]);
+
+  // 背景画像を取得する関数
+  const getBackgroundImage = (office: string) => {
+    switch (office) {
+      case "企画局":
+        setTextColor("#CB1C1C");
+        return "/images/kikaku.png";
+      case "財務局":
+        setTextColor("#529B30");
+        return "/images/zaimu.png";
+      case "渉外局":
+        setTextColor("#2C7184");
+        return "/images/syougai.png";
+      case "情報局":
+        setTextColor("#d26e27");
+        return "/images/jyoho.png";
+      case "制作局":
+        setTextColor("#8030A5");
+        return "/images/seisaku.png";
+      case "総務局":
+        setTextColor("#414040");
+        return "/images/soumu.png";
+      default:
+        setTextColor("#000000");
+        return "/images/default.png";
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -94,24 +107,51 @@ export default function Home() {
     setLoading(true);
 
     const cardElement = cardRef.current;
-    const pixelRatio = window.innerWidth <= 600 ? 8 : 4;
+    const pixelRatio = 4;
 
-    toPng(cardElement, {
-      pixelRatio: pixelRatio,
-      useCORS: true, 
-      style: {
-        transform: "scale(1)",
-      },
-    })
-      .then((dataUrl: string) => {
-        download(dataUrl, "profile-card.png");
+    // iOSの場合、特別な処理を追加
+    if (isIOS()) {
+      // CORS問題を回避するため、画像を再読み込み
+      const img = new Image();
+      img.src = backgroundImage;
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        toPng(cardElement, {
+          pixelRatio: pixelRatio,
+          useCORS: true, // CORS対応
+          style: {
+            transform: "scale(1)",
+          },
+        })
+          .then((dataUrl: string) => {
+            download(dataUrl, "profile-card.png");
+          })
+          .catch((err: Error) => {
+            console.error("Oops, something went wrong!", err);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      };
+    } else {
+      // 通常の処理
+      toPng(cardElement, {
+        pixelRatio: pixelRatio,
+        useCORS: true,
+        style: {
+          transform: "scale(1)",
+        },
       })
-      .catch((err: Error) => {
-        console.error("Oops, something went wrong!", err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+        .then((dataUrl: string) => {
+          download(dataUrl, "profile-card.png");
+        })
+        .catch((err: Error) => {
+          console.error("Oops, something went wrong!", err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
   };
 
   // 全てのフィールドが入力されているか確認
