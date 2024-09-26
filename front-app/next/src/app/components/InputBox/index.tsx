@@ -15,27 +15,21 @@ export default function Home() {
   const cardRef = useRef<HTMLDivElement | null>(null);
   const textTopRef = useRef<HTMLDivElement | null>(null);
 
-  // 背景画像のURLをstateに追加
   const [backgroundImage, setBackgroundImage] = useState<string>(
     "/images/default.png"
   );
-
-  // 文字色の状態を管理
-  const [textColor, setTextColor] = useState<string>("#000000"); // デフォルトの文字色
+  const [textColor, setTextColor] = useState<string>("#000000");
 
   useEffect(() => {
     const textElement = textTopRef.current;
     if (textElement) {
-      const maxFontSize = 24; // constに変更
-      const minFontSize = 16; // constに変更
-
+      const maxFontSize = 24;
+      const minFontSize = 16;
       let fontSize = maxFontSize;
       const containerWidth = textElement.offsetWidth;
 
-      // 初期フォントサイズを設定
       textElement.style.fontSize = `${fontSize}px`;
 
-      // テキストが要素に収まるようにフォントサイズを調整
       while (
         textElement.scrollWidth > containerWidth &&
         fontSize > minFontSize
@@ -43,14 +37,12 @@ export default function Home() {
         fontSize -= 1;
         textElement.style.fontSize = `${fontSize}px`;
 
-        // フォントサイズに応じて `top` の値を調整
-        const topValue = 25 - (maxFontSize - fontSize) / 12;
+        const topValue = 24 - (maxFontSize - fontSize) / 12;
         textElement.style.top = `${topValue}%`;
       }
     }
   }, [profile.name]);
 
-  // officeの値が変更されたときに背景画像と文字色を更新
   useEffect(() => {
     switch (profile.office) {
       case "企画局":
@@ -101,17 +93,15 @@ export default function Home() {
 
     setLoading(true);
 
-    // 要素の現在のサイズを取得
-    const cardWidth = cardRef.current.offsetWidth;
-    const cardHeight = cardRef.current.offsetHeight;
+    const cardElement = cardRef.current;
+    const pixelRatio = window.innerWidth <= 600 ? 8 : 4;
 
-    // 画面の幅に応じて解像度の倍率を決定
-    const pixelRatio = window.innerWidth <= 600 ? 8 : 4; // 600px以下なら2倍、それ以上は4倍
-
-    toPng(cardRef.current, {
-      width: cardWidth,
-      height: cardHeight,
-      pixelRatio: pixelRatio, // 解像度の倍率を設定
+    toPng(cardElement, {
+      pixelRatio: pixelRatio,
+      useCORS: true, 
+      style: {
+        transform: "scale(1)",
+      },
     })
       .then((dataUrl: string) => {
         download(dataUrl, "profile-card.png");
@@ -124,16 +114,18 @@ export default function Home() {
       });
   };
 
+  // 全てのフィールドが入力されているか確認
+  const isButtonDisabled =
+    !profile.name || !profile.office || !profile.grade || loading;
+
   return (
     <div className={s.container}>
-      {/* プロフィールカード */}
       <div className={s.component}>
         <div
           ref={cardRef}
           className={s.card}
-          style={{ backgroundImage: `url(${backgroundImage})` }} // 背景画像を動的に変更
+          style={{ backgroundImage: `url(${backgroundImage})` }}
         >
-          {/* テキスト要素の配置 */}
           <div
             ref={textTopRef}
             className={s.textTop}
@@ -157,6 +149,7 @@ export default function Home() {
                 placeholder="例)長岡　太郎orおかたろ"
                 value={profile.name}
                 onChange={handleChange}
+                maxLength={8}
               />
             </div>
             <div className={s.inputForm}>
@@ -198,7 +191,7 @@ export default function Home() {
         <button
           onClick={handleDownload}
           className={s.button}
-          disabled={loading}
+          disabled={isButtonDisabled}
         >
           {loading ? <div className={s.spinner}></div> : "生成する"}
         </button>

@@ -39,7 +39,7 @@
 }
 
 .textTop {
-  top: 23%;
+  top: 25%;
   text-align: center;
   justify-content: center;
   left: 140px;
@@ -86,7 +86,12 @@
 }
 
 .button:disabled {
-  background: #9cc8c6;
+  background-color: #d3d3d3;
+  cursor: not-allowed;
+}
+
+.button:disabled:hover {
+  background-color: #d3d3d3;
 }
 
 .button:hover {
@@ -128,7 +133,7 @@
     transform: scale(0.7); /* 縮小率を設定 */
     /* border-radius: 6px; */
   }
-/* 
+  /* 
   .textTop {
     top: 20%;
     text-align: center;
