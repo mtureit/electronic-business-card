@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { toPng } from "html-to-image";
+import download from "downloadjs";
 import s from "./index.module.css";
 
 export default function Home() {
@@ -18,7 +19,6 @@ export default function Home() {
     "/images/default.png"
   );
   const [textColor, setTextColor] = useState<string>("#000000");
-  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
 
   // iOSを検出する関数
   const isIOS = () => {
@@ -99,7 +99,7 @@ export default function Home() {
     }));
   };
 
-  const handleGenerateImage = () => {
+  const handleDownload = () => {
     if (cardRef.current === null) {
       return;
     }
@@ -121,7 +121,7 @@ export default function Home() {
       },
     })
       .then((dataUrl: string) => {
-        setGeneratedImage(dataUrl); // 生成した画像を状態に保存
+        download(dataUrl, "profile-card.png");
       })
       .catch((err: Error) => {
         console.error("エラーが発生しました: ", err);
@@ -206,23 +206,13 @@ export default function Home() {
       </div>
       <div className={s.component}>
         <button
-          onClick={handleGenerateImage}
+          onClick={handleDownload}
           className={s.button}
           disabled={isButtonDisabled}
         >
           {loading ? <div className={s.spinner}></div> : "生成する"}
         </button>
       </div>
-
-      {/* 生成した画像を表示 */}
-      {generatedImage && (
-        <div className={s.component}>
-          <h3>保存するには、右クリックまたは長押ししてください</h3>
-          <div className={s.generateCard}>
-            <img src={generatedImage} alt="Generated Profile Card" />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
