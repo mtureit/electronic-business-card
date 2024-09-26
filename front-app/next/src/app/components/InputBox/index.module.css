@@ -16,6 +16,7 @@
   margin-top: 10px;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .card {
@@ -38,10 +39,10 @@
 }
 
 .textTop {
-  top: 25%;
+  top: 23%;
   text-align: center;
   justify-content: center;
-  left: 145px;
+  left: 140px;
   font-size: 24px;
   min-height: 30px;
   max-width: 128px;
@@ -50,7 +51,7 @@
 }
 
 .textMiddle {
-  top: 80%;
+  top: 78%;
   right: 65px;
   font-size: 20px;
 }
@@ -118,15 +119,16 @@
     width: 80%;
     align-items: center;
   }
-  .inputForm {
+  /* .inputForm {
     font-size: 12px;
-  }
+  } */
   .card {
-    width: 173.4px;
-    height: 101.4px;
-    border-radius: 6px;
+    /* width: 173.4px;
+    height: 101.4px; */
+    transform: scale(0.7); /* 縮小率を設定 */
+    /* border-radius: 6px; */
   }
-
+/* 
   .textTop {
     top: 20%;
     text-align: center;
@@ -139,8 +141,8 @@
   }
 
   .textMiddle {
-    top: 82%; /* 学年の位置を調整 */
+    top: 82%; 
     right: 38px;
     font-size: 10px;
-  }
+  } */
 }
